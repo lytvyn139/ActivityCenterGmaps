@@ -1,0 +1,63 @@
+@{
+    ViewData["Title"] = "Gatherings";
+}
+
+@model Activity
+
+<div class="row">
+    <div class="col-lg-8 offset-lg-2">
+        <div class="card border border-dark mt-2">
+            <div class="card-header bg-dark text-white"><h3>@Model.Title</h3>
+            </div>
+            <div class="card-body bg-dark">
+                <div class="row">
+                    <div class="col-sm-8 bg-dark text-white">
+                        <p class="font-weight-bold">Event Coordinator: <span class="font-weight-normal">@Model.Planner.FirstName @Model.Planner.LastName</span></p>
+                        <p class="font-weight-bold">Date: <span class="font-weight-normal">@Model.Date.ToString("dddd, MMMM dd yyyy h:mm tt")</span></p>
+                        <p class="font-weight-bold">Duration: <span class="font-weight-normal">@Model.DurationInt @Model.DurationStr</span></p>
+                        <p class="font-weight-bold">Description: <span class="font-weight-normal">@Model.Description</span></p>
+			<p class="font-weight-bold">Address: <span class="font-weight-normal">@Model.Location </span>
+                	<div class="embed-responsive embed-responsive-16by9">
+                         <iframe
+                             width="450"
+                             height="250"
+                             frameborder="0" style="border:0"
+                             src="https://www.google.com/maps/embed/v1/place?key=NOTSOFASTBUD&q=@Model.Location" allowfullscreen>
+                        </iframe>
+		            </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <ul class="list-group">
+                            <li class="font-weight-bold list-group-item bg-warning text-dark mt-2">Participants: </li>
+                            @foreach( var g in Model.Guests)
+                            {
+                                <li class="list-group-item list-group-item-dark">@g.Participants.FirstName @g.Participants.LastName</li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+                <div class="text-center bg-dark m-2">
+                    <a href="/dashboard" class="btn btn-primary">Dashboard</a>
+                    <a href="/activity/new" class="btn btn-success">New Activity</a>
+                        @if(ViewBag.User.UserId == Model.Planner.UserId)
+                        {
+                            <a class="btn btn-danger" href="/activity/@Model.ActivityId/delete">Delete Activity</a>
+                        }
+                        else
+                        {
+                            if(Model.Guests.Any(gl => gl.UserId == ViewBag.User.UserId))
+                            {
+                                <a class="btn btn-warning" asp-action="ToggleStatus" asp-route-activityId="@Model.ActivityId" asp-route-status="leave">Leave Activity</a>
+                            }
+                            else
+                            {
+                                <a class="btn btn-success " asp-action="ToggleStatus" asp-route-activityId="@Model.ActivityId" asp-route-status="join">Join Activiry</a>
+                            }
+                        }    
+                    <a href="/" class="btn btn-danger">Logout</a>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</div>

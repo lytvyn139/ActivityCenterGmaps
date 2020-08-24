@@ -1,0 +1,66 @@
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+@model List<Activity>
+
+<div class="container-lg bg-dark mt-2">
+    <div class="text-center">
+            <div class="mx-auto" >
+                
+                <h2 class="display text-light">@ViewBag.User.FirstName, Welcome !</h2>
+                <h2 class="display text-light">to the Dojo Activity Center!</h2>
+                <div class="text-center">
+                    <a href="/activity/new" class="btn btn-primary rounded shadow p-2">New Activity</a>
+                    <a href="/" class="btn btn-danger rounded shadow p-2">Logout</a>
+                </div>
+            </div>
+
+            <div class="table-responsive-lg rounded shadow mt-3 ">
+               <table class="table table-striped table-dark">
+                    <thead> 
+                        <tr class="text-light">
+                            <th>Activity</th>
+                            <th>Date & Time</th>
+                            <th>Duration</th>
+                            <th>Event Coordinator</th>
+                            <th># of Participants</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-light">
+                        @foreach (Activity g in Model)
+                        {
+                            <tr>
+                                <td class="text-left"><a href="/activity/@g.ActivityId" class="btn btn-primary ">@g.Title</a></td>
+                                <td>@g.Date.ToString("MM/dd/yy h:mm tt")</td>
+                                <td>@g.DurationInt @g.DurationStr</td>
+                                <td>@g.Planner.FirstName</td>
+                                <td>@g.Guests.Count</td>
+                                <td>
+                                    @if(ViewBag.User.UserId == g.Planner.UserId)
+                                    {
+                                        <a class="btn btn-danger rounded" href="/activity/@g.ActivityId/delete">Delete</a>
+                                    }
+                                    else
+                                    {
+                                        @* Are they going to that event? *@
+                                        if(g.Guests.Any(gl => gl.UserId == ViewBag.User.UserId))
+                                        {
+                                            <a class="btn btn-warning rounded" asp-action="ToggleStatus" asp-route-activityId="@g.ActivityId" asp-route-status="leave">Leave</a>
+                                        }
+                                        else
+                                        {
+                                            <a class="btn btn-success rounded " asp-action="ToggleStatus" asp-route-activityId="@g.ActivityId" asp-route-status="join">Join</a>
+                                        }
+                                    }
+                                </td>
+                            </tr>    
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
